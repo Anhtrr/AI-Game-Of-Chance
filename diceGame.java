@@ -1,5 +1,4 @@
 import java.util.*;
-import java.io.*;
 
 /**
  *  
@@ -10,48 +9,39 @@ import java.io.*;
  *  
  */
 public class diceGame {
+    // MAIN
     public static void main(String args[]){
         int N_Sides = -1, L_Target = -1, U_Target = -1, N_Dice = -1, N_Games = -1;
         double M = -1;
-        
         // READ INPUT
         try {
             String[] readInput = args;
-            N_Sides = Integer.valueOf(readInput[0]);
-            L_Target = Integer.valueOf(readInput[1]);
-            U_Target = Integer.valueOf(readInput[2]);
-            N_Dice = Integer.valueOf(readInput[3]);
+            N_Dice = Integer.valueOf(readInput[0]);
+            N_Sides = Integer.valueOf(readInput[1]);
+            L_Target = Integer.valueOf(readInput[2]);
+            U_Target = Integer.valueOf(readInput[3]);
             M = Double.valueOf(readInput[4]);
             N_Games = Integer.valueOf(readInput[5]);
         } catch (Exception e) {
             System.err.println("\nPlease make sure the program is run in the right command format: " +
-            "\n\n   'java diceGame.java [NSides] [LTarget] [UTarget] [NDice] [M] [NGames]'\n" + 
+            "\n\n   'java diceGame.java [NDice] [NSides] [LTarget] [UTarget] [M] [NGames]'\n" + 
             "\n      - Ignore (and not include) '[]' in your command." + 
             "\n      - Make sure all values are filled with a space between each." + 
-            "\n      - Make sure all values are integers, except 'M'" + 
-            "\n      - 'M' is a floating point number" + 
-            "\n      - Make sure all values are larger than 0\n");
+            "\n      - Make sure all values are integers, except 'M'." + 
+            "\n      - 'M' is a floating point number or integer." + 
+            "\n      - Make sure all values are larger than 0.\n");
             System.exit(0);
         }
         if (N_Sides <= 0 || L_Target <= 0 || U_Target <= 0 || N_Dice <= 0 || N_Games <= 0 || M <= 0){
             System.err.println("\nPlease make sure the program is run in the right command format: " +
-            "\n\n   'java diceGame.java [NSides] [LTarget] [UTarget] [NDice] [M] [NGames]'\n" + 
+            "\n\n   'java diceGame.java [NDice] [NSides] [LTarget] [UTarget] [M] [NGames]'\n" + 
             "\n      - Ignore (and not include) '[]' in your command." + 
             "\n      - Make sure all values are filled with a space between each." + 
-            "\n      - Make sure all values are integers, except 'M'" + 
-            "\n      - 'M' is a floating point number" + 
-            "\n      - Make sure all values are larger than 0\n");
+            "\n      - Make sure all values are integers, except 'M'." + 
+            "\n      - 'M' can be a floating point number or integer." + 
+            "\n      - Make sure all values are larger than 0.\n");
             System.exit(0);
         }
-
-        // TEST
-        // System.out.println("NSides: " + N_Sides + "\n" + 
-        // "LTarget: " + L_Target + "\n" + 
-        // "UTarget: " + U_Target + "\n" + 
-        // "NDice: " + N_Dice + "\n" + 
-        // "M: " + M + "\n" + 
-        // "NGames: " + N_Games);
-
         // RUN GAME
         runGame(N_Dice, N_Sides, L_Target, U_Target, N_Games, M);
     }
@@ -74,16 +64,24 @@ public class diceGame {
                 }
             }
         }
-        System.out.println("\n============================================================");
-        System.out.println("\nReinforcement learning experiment with M = " + M + ", NGames = " + String.format("%,d", N_Games) + "\n");
+        String reinforcementLearningLine = "\nReinforcement learning experiment with M = " + M + ", NGames = " + String.format("%,d", N_Games) + "\n";
+        String header = "\n";
+        String footer = "";
+        for(int i = 0; i < reinforcementLearningLine.length(); i++){
+            header+="=";
+            footer+="=";
+        }
+        footer+="\n";
+        System.out.println(header);
+        System.out.println("\nGame: NDice=" + N_Dice + ", NSides=" + N_Sides + ", LTarget=" + L_Target + ", UTarget=" + U_Target);
+        System.out.println(reinforcementLearningLine);
         // Play Game for N_Games number of times
         for(int i = 0; i < N_Games; i++){
             playGame(N_Dice, N_Sides, L_Target, U_Target, LoseCount, WinCount, M);
         }
-
         // Extract Answer from final state of WinCount and LoseCount
         extractAnswer(WinCount, LoseCount);
-        System.out.println("============================================================");
+        System.out.println(footer);
     }
 
     // PLAY GAME A SINGULAR TIME
@@ -94,12 +92,10 @@ public class diceGame {
         currentState[0] = 0; 
         // player 2
         currentState[1] = 0;        
-        
         // Keep track of game trace
         List<int[]> scoreSequence = new ArrayList<>();
         List<Integer> diceRolledSequence = new ArrayList<>();
         List<int[]> outcomeSequence = new ArrayList<>();
-
         // Winner or Loser condition
         while(currentState[1] < L_Target){
             int[] stateCopy = new int[2];
@@ -109,25 +105,16 @@ public class diceGame {
             diceRolledSequence.add(numOfDiceChosen);
             int[] diceOutcome = rollDice(numOfDiceChosen, N_Sides);
             outcomeSequence.add(diceOutcome);
-            
-            // System.out.println("TURN: [" + currentState[0] + ", " + currentState[1] + "]");
-            // System.out.println("- NOdice rolled: " + numOfDiceChosen);
-            // System.out.println("- dice values: ");
             // Update score
             for (int diceValue : diceOutcome){
                 currentState[0] += diceValue;
-                // System.out.println(diceValue + ",");
             }
-            // System.out.println("");
-            // System.out.println("UPDATED: [" + currentState[0] + ", " + currentState[1] + "]");
-
             // Switch Turns
             int player1Score = currentState[0];
             int player2Score = currentState[1];
             currentState[0] = player2Score;
             currentState[1] = player1Score;
         }
-
         // Determine Winner or Loser
         int win = -1;
         int mod = -1; 
@@ -139,7 +126,6 @@ public class diceGame {
             win = 1;
             mod = (scoreSequence.size()-1) % 2;
         }
-        
         // Update WinCount and LoseCount
         // for each turn
         for(int i = 0; i < scoreSequence.size(); i++){
@@ -162,8 +148,6 @@ public class diceGame {
                     WinCount[x][y][j]+=1;
                 }
             }
-            // System.out.println(WinCount[x][y][j]);
-            // System.out.println(LoseCount[x][y][j]);
         }
     }
 
@@ -174,7 +158,6 @@ public class diceGame {
         int T = 0;
         double[] f_Values = new double[N_Dice+1];
         f_Values[0] = 0;
-
         // Calculate fj(x,y,j) for 1 ... N_Dice 
         // Calculate T
         for (int i = 1; i <= N_Dice; i++){
@@ -190,7 +173,6 @@ public class diceGame {
             }
             f_Values[i] = f_Value;
         }
-
         // Select B
         int B = 0;
         for (int i = 1; i <= N_Dice; i++){
@@ -198,7 +180,6 @@ public class diceGame {
                 B = i;
             }
         }
-
         // Calc g
         double g = 0;
         for (int i = 1; i <= N_Dice; i++){
@@ -206,7 +187,6 @@ public class diceGame {
                 g += f_Values[i];
             }
         }
-
         // Calculate pj(x,y,j) for 1 ... N_Dice 
         double[] p_Values = new double[N_Dice+1];
         p_Values[0] = 0;
@@ -214,7 +194,7 @@ public class diceGame {
         // Set PB
         for (int i = 1; i <= N_Dice; i++){
             if(i == B){
-                double p_Value = (double) (T * f_Values[i] + M)/ (double) (T * f_Values[i] + N_Dice * M);
+                double p_Value = (double) ((T * f_Values[i]) + M)/ (double) ((T * f_Values[i]) + (N_Dice * M));
                 p_Values[i] = p_Value;
                 oneMinusPB = 1 - p_Value;
             }
@@ -228,7 +208,7 @@ public class diceGame {
                 continue;
             }
             else{
-                double p_Value = (double) (oneMinusPB * T * f_Values[i] + M) / (double) (g * T + (N_Dice-1)*M);
+                double p_Value = (double) ((oneMinusPB * T * f_Values[i]) + M) / (double) ((g * T) + ((N_Dice-1)*M));
                 p_Values[i] = p_Value;
             }
         }
@@ -236,6 +216,7 @@ public class diceGame {
         return chosenFromDist;
     }
     
+    // HELPER 1 - CHOOSE FROM DISTRIBUTION
     public static int chooseFromDist(double[] p_Values){
         // Sampling from distribution
         double[] u_Values = new double[p_Values.length];
@@ -252,7 +233,7 @@ public class diceGame {
         return p_Values.length-1;
     }
 
-    // HELPER 1 - SIMULATE ROLLING DICE
+    // HELPER 2 - SIMULATE ROLLING DICE
     public static int[] rollDice(int N_Dice, int N_Sides){
         int[] rolledValues = new int[N_Dice];
         // for each dice
@@ -264,7 +245,7 @@ public class diceGame {
         return rolledValues;
     }
 
-    // HELPER 2 - EXTRACT ANSWER
+    // HELPER 3 - EXTRACT ANSWER
     public static void extractAnswer(int[][][] WinCount, int[][][] LoseCount){        
         String playString = "PLAY =\n";
         String probabilityString = "PROB =\n";
@@ -283,7 +264,7 @@ public class diceGame {
                     }
                     else{
                         double tmp_probability_j = (double) numerator/ (double) denominator;
-                        // find max probability
+                        // find max probability and chosen J for each state
                         if (tmp_probability_j > probability_J){
                             chosen_J = j;
                             probability_J = tmp_probability_j;
