@@ -52,7 +52,7 @@ java diceGame.java [NDice] [NSides] [LTarget] [UTarget] [M] [NGames]
 
 ####    EXAMPLE RUNS
                 
-<div align="center">========== EXAMPLE 1 ==========</div>  
+<div align="center">==================== EXAMPLE 1 ====================</div>  
                               
 Specifications:
 - NDice = 2
@@ -68,7 +68,7 @@ Command:
 java diceGame.java 2 2 4 4 100 100000
 ```
                  
-<div align="center">========== EXAMPLE 2 ==========</div> 
+<div align="center">==================== EXAMPLE 2 ====================</div> 
                       
 Specifications:
 - NDice = 2
@@ -84,7 +84,7 @@ Command:
 java diceGame.java 2 2 4 5 100 100000
 ```
                  
-<div align="center">========== EXAMPLE 3 ==========</div> 
+<div align="center">==================== EXAMPLE 3 ====================</div> 
                                    
 Specifications:
 - NDice = 3
@@ -100,7 +100,7 @@ Command:
 java diceGame.java 3 2 6 7 100 100000
 ```
                  
-<div align="center">========== EXAMPLE 4 ==========</div> 
+<div align="center">==================== EXAMPLE 4 ====================</div> 
                                    
 Specifications:
 - NDice = 2
